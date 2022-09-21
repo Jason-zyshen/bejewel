@@ -1,0 +1,157 @@
+type AddressBook {
+	address_Line_1: String!
+	address_line_2: String!
+	inCityCities: [City!]! @relationship(type: "IN_CITY", direction: OUT)
+	inCountryCountries: [Country!]! @relationship(type: "IN_COUNTRY", direction: OUT)
+	inStateStates: [State!]! @relationship(type: "IN_STATE", direction: OUT)
+	is_default: String!
+	phone_number: String!
+	usersHasAddressBook: [User!]! @relationship(type: "HAS_ADDRESS_BOOK", direction: IN)
+	zipcode: String!
+}
+
+type Cart {
+	hasProductProducts: [Product!]! @relationship(type: "HAS_PRODUCT", direction: OUT, properties: "HasProductProperties")
+	usersHasCart: [User!]! @relationship(type: "HAS_CART", direction: IN, properties: "HasCartProperties")
+}
+
+type Category {
+	inCategoryProducts: [Product!]! @relationship(type: "IN_CATEGORY", direction: OUT)
+}
+
+type City {
+	addressBooksInCity: [AddressBook!]! @relationship(type: "IN_CITY", direction: IN)
+	statesHasCity: [State!]! @relationship(type: "HAS_CITY", direction: IN)
+}
+
+type Country {
+	addressBooksInCountry: [AddressBook!]! @relationship(type: "IN_COUNTRY", direction: IN)
+	hasStateStates: [State!]! @relationship(type: "HAS_STATE", direction: OUT)
+}
+
+type Designer {
+	avatar: String!
+	bio: String!
+	create_time: String!
+	email: String!
+	hasMediaMedia: [Media!]! @relationship(type: "HAS_MEDIA", direction: OUT)
+	name: String!
+	password: String!
+	publishesProductProducts: [Product!]! @relationship(type: "PUBLISHES_PRODUCT", direction: OUT, properties: "PublishesProductProperties")
+}
+
+interface HasCartProperties @relationshipProperties {
+	at_time: String!
+}
+
+interface HasOrderProperties @relationshipProperties {
+	at_time: String!
+}
+
+interface HasProductProperties @relationshipProperties {
+	amount: String!
+}
+
+interface LikedProperties @relationshipProperties {
+	at_time: String!
+}
+
+type Media {
+	cover_media_list: String!
+	designersHasMedia: [Designer!]! @relationship(type: "HAS_MEDIA", direction: IN)
+	detail_media_list: String!
+	productsHasMedia: [Product!]! @relationship(type: "HAS_MEDIA", direction: IN)
+}
+
+type MediaReview {
+	instagram_link: String!
+	productsHasImageReview: [Product!]! @relationship(type: "HAS_IMAGE_REVIEW", direction: IN)
+	usersPostsMediaReview: [User!]! @relationship(type: "POSTS_MEDIA_REVIEW", direction: IN, properties: "PostsMediaReviewProperties")
+}
+
+type Order {
+	at_time: String!
+	hasProductProducts: [Product!]! @relationship(type: "HAS_PRODUCT", direction: OUT, properties: "HasProductProperties")
+	is_cancelled: String!
+	is_finished: String!
+	is_paid: String!
+	is_placed: String!
+	is_shiped: String!
+	order_number: String!
+	refundsFromOrder: [Refund!]! @relationship(type: "FROM_ORDER", direction: IN)
+	ship_order: String!
+	usersHasOrder: [User!]! @relationship(type: "HAS_ORDER", direction: IN, properties: "HasOrderProperties")
+}
+
+interface PostsMediaReviewProperties @relationshipProperties {
+	at_time: String!
+}
+
+interface PostsTextReviewProperties @relationshipProperties {
+	at_time: String!
+}
+
+type Product {
+	cartsHasProduct: [Cart!]! @relationship(type: "HAS_PRODUCT", direction: IN, properties: "HasProductProperties")
+	categoriesInCategory: [Category!]! @relationship(type: "IN_CATEGORY", direction: IN)
+	description: String!
+	designersPublishesProduct: [Designer!]! @relationship(type: "PUBLISHES_PRODUCT", direction: IN, properties: "PublishesProductProperties")
+	hasImageReviewMediaReviews: [MediaReview!]! @relationship(type: "HAS_IMAGE_REVIEW", direction: OUT)
+	hasMediaMedia: [Media!]! @relationship(type: "HAS_MEDIA", direction: OUT)
+	hasTextReviewTextReviews: [TextReview!]! @relationship(type: "HAS_TEXT_REVIEW", direction: OUT)
+	name: String!
+	ordersHasProduct: [Order!]! @relationship(type: "HAS_PRODUCT", direction: IN, properties: "HasProductProperties")
+	price: String!
+	product_number: String!
+	refundsFromProduct: [Refund!]! @relationship(type: "FROM_PRODUCT", direction: IN)
+	sales_amount: String!
+	tagline: String!
+	usersLiked: [User!]! @relationship(type: "LIKED", direction: IN, properties: "LikedProperties")
+	usersViewed: [User!]! @relationship(type: "VIEWED", direction: IN, properties: "ViewedProperties")
+	variable_cost: String!
+}
+
+interface PublishesProductProperties @relationshipProperties {
+	at_time: String!
+	margin_split: String!
+}
+
+type Refund {
+	amount: String!
+	fromOrderOrders: [Order!]! @relationship(type: "FROM_ORDER", direction: OUT)
+	fromProductProducts: [Product!]! @relationship(type: "FROM_PRODUCT", direction: OUT)
+	is_hold: String!
+	usersHasRefund: [User!]! @relationship(type: "HAS_REFUND", direction: IN)
+}
+
+type State {
+	addressBooksInState: [AddressBook!]! @relationship(type: "IN_STATE", direction: IN)
+	countriesHasState: [Country!]! @relationship(type: "HAS_STATE", direction: IN)
+	hasCityCities: [City!]! @relationship(type: "HAS_CITY", direction: OUT)
+}
+
+type TextReview {
+	at_time: String!
+	productsHasTextReview: [Product!]! @relationship(type: "HAS_TEXT_REVIEW", direction: IN)
+	text: String!
+	usersPostsTextReview: [User!]! @relationship(type: "POSTS_TEXT_REVIEW", direction: IN, properties: "PostsTextReviewProperties")
+}
+
+type User {
+	create_time: String!
+	email: String!
+	hasAddressBookAddressBooks: [AddressBook!]! @relationship(type: "HAS_ADDRESS_BOOK", direction: OUT)
+	hasCartCarts: [Cart!]! @relationship(type: "HAS_CART", direction: OUT, properties: "HasCartProperties")
+	hasOrderOrders: [Order!]! @relationship(type: "HAS_ORDER", direction: OUT, properties: "HasOrderProperties")
+	hasRefundRefunds: [Refund!]! @relationship(type: "HAS_REFUND", direction: OUT)
+	likedProducts: [Product!]! @relationship(type: "LIKED", direction: OUT, properties: "LikedProperties")
+	password: String!
+	postsMediaReviewMediaReviews: [MediaReview!]! @relationship(type: "POSTS_MEDIA_REVIEW", direction: OUT, properties: "PostsMediaReviewProperties")
+	postsTextReviewTextReviews: [TextReview!]! @relationship(type: "POSTS_TEXT_REVIEW", direction: OUT, properties: "PostsTextReviewProperties")
+	username: String!
+	viewedProducts: [Product!]! @relationship(type: "VIEWED", direction: OUT, properties: "ViewedProperties")
+}
+
+interface ViewedProperties @relationshipProperties {
+	at_time: String!
+}
