@@ -50,6 +50,7 @@ interface HasOrderProperties @relationshipProperties {
 
 interface HasProductProperties @relationshipProperties {
 	amount: String!
+	is_removed: Boolean!
 }
 
 interface LikedProperties @relationshipProperties {
@@ -57,9 +58,9 @@ interface LikedProperties @relationshipProperties {
 }
 
 type Media {
-	cover_media_list: String!
+	cover_media_list: String
 	designersHasMedia: [Designer!]! @relationship(type: "HAS_MEDIA", direction: IN)
-	detail_media_list: String!
+	detail_media_list: String
 	productsHasMedia: [Product!]! @relationship(type: "HAS_MEDIA", direction: IN)
 }
 
@@ -76,7 +77,7 @@ type Order {
 	is_finished: String!
 	is_paid: String!
 	is_placed: String!
-	is_shiped: String!
+	is_shipped: String!
 	order_number: String!
 	refundsFromOrder: [Refund!]! @relationship(type: "FROM_ORDER", direction: IN)
 	ship_order: String!
@@ -94,7 +95,7 @@ interface PostsTextReviewProperties @relationshipProperties {
 type Product {
 	cartsHasProduct: [Cart!]! @relationship(type: "HAS_PRODUCT", direction: IN, properties: "HasProductProperties")
 	categoriesInCategory: [Category!]! @relationship(type: "IN_CATEGORY", direction: IN)
-	description: String!
+	description: String
 	designersPublishesProduct: [Designer!]! @relationship(type: "PUBLISHES_PRODUCT", direction: IN, properties: "PublishesProductProperties")
 	hasImageReviewMediaReviews: [MediaReview!]! @relationship(type: "HAS_IMAGE_REVIEW", direction: OUT)
 	hasMediaMedia: [Media!]! @relationship(type: "HAS_MEDIA", direction: OUT)
@@ -104,11 +105,11 @@ type Product {
 	price: String!
 	product_number: String!
 	refundsFromProduct: [Refund!]! @relationship(type: "FROM_PRODUCT", direction: IN)
-	sales_amount: String!
-	tagline: String!
+	sales_amount: String
+	tagline: String
 	usersLiked: [User!]! @relationship(type: "LIKED", direction: IN, properties: "LikedProperties")
 	usersViewed: [User!]! @relationship(type: "VIEWED", direction: IN, properties: "ViewedProperties")
-	variable_cost: String!
+	variable_cost: String
 }
 
 interface PublishesProductProperties @relationshipProperties {
@@ -155,3 +156,4 @@ type User {
 interface ViewedProperties @relationshipProperties {
 	at_time: String!
 }
+
