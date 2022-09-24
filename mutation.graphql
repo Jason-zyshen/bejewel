@@ -1,0 +1,29 @@
+type Mutation {
+    createUser(
+        username: String!
+        email: String!
+        password: String!
+    ): User! @cypher(statement: """
+    // CREATE USER
+    CREATE (u:User {id: randomUUID(), username: $username, email: $email, password: $password, createTime: datetime.realtime()})-[:HAS_CART]->(:Cart {id:randomUUID(), isPlaced: false})
+    RETURN u
+    """)
+}
+
+
+type Mutation {
+    createOrder(
+        userID: String!
+    ): Order! @cypher(statement: """
+    //CREATE ORDER FROM CART
+    MATCH (u:User {id: $userID})-->(c:Cart {isPlaced: false})
+    CREATE (u)-[:HAS_ORDER]->(o:Order {id: randomUUID(), createTime: datetime.realtime()})<-[:PLACE_ORDER]-(c)
+    CREATE (u)-[:HAS_CART]->(:Cart {id:randomUUID(), isPlaced: false})
+    SET c.isPlaced = true
+    WITH u, c, o
+
+    MATCH (c)-[cp:CART_PRODUCT]->(p: Product)
+    CREATE (o)-[:ORDER_PRODUCT {amount: cp.amount}]->(p)
+    RETURN o
+    """)
+}

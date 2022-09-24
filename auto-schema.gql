@@ -1,0 +1,144 @@
+type User {
+  username: String!
+  email: String!
+  password: String!
+  createTime: DateTime! @timestamp(operations: [CREATE])
+  id: ID! @id
+  hasOrderOrder: Order @relationship(type: "HAS_ORDER", direction: OUT)
+  likedProduct: Product @relationship(type: "LIKED", direction: OUT, properties: "Liked")
+  hasAddressBookAddressbook: AddressBook @relationship(type: "HAS_ADDRESS_BOOK", direction: OUT)
+  postsReviewReview: Review @relationship(type: "POSTS_REVIEW", direction: OUT)
+  hasRefundRefund: Refund @relationship(type: "HAS_REFUND", direction: OUT)
+  hasCartCart: Cart @relationship(type: "HAS_CART", direction: OUT)
+}
+
+type Order {
+  isPaid: Boolean! @default(value: false)
+  isDelivered: Boolean! @default(value: false)
+  isFinished: Boolean! @default(value: false)
+  isCancelled: Boolean! @default(value: false)
+  createTime: DateTime! @timestamp(operations: [CREATE])
+  id: ID! @id
+  userHasOrder: User @relationship(type: "HAS_ORDER", direction: IN)
+  orderProductProduct: Product @relationship(type: "ORDER_PRODUCT", direction: OUT, properties: "OrderProduct")
+  refundFromOrder: Refund @relationship(type: "FROM_ORDER", direction: IN)
+  cartPlaceOrder: Cart @relationship(type: "PLACE_ORDER", direction: IN, properties: "PlaceOrder")
+}
+
+type Product {
+  name: String!
+  price: Float!
+  description: String
+  salesAmount: Int
+  id: ID! @id
+  createTime: DateTime! @timestamp(operations: [CREATE])
+  coverMedia: String
+  detailMedia: String
+  userLiked: User @relationship(type: "LIKED", direction: IN, properties: "Liked")
+  orderOrderProduct: Order @relationship(type: "ORDER_PRODUCT", direction: IN, properties: "OrderProduct")
+  hasReviewReview: Review @relationship(type: "HAS_REVIEW", direction: OUT)
+  designerPublishesProduct: Designer @relationship(type: "PUBLISHES_PRODUCT", direction: IN, properties: "PublishesProduct")
+  refundRefundProduct: Refund @relationship(type: "REFUND_PRODUCT", direction: IN)
+  categoryInCategory: Category @relationship(type: "IN_CATEGORY", direction: IN)
+  cartCartProduct: Cart @relationship(type: "CART_PRODUCT", direction: IN, properties: "CartProduct")
+}
+
+type AddressBook {
+  addressLine1: String!
+  addressLine2: String
+  zipcode: Int!
+  phoneNumber: Int!
+  isDefault: Boolean! @default(value: true)
+  userHasAddressBook: User @relationship(type: "HAS_ADDRESS_BOOK", direction: IN)
+  inCountryCountry: Country @relationship(type: "IN_COUNTRY", direction: OUT)
+  inStateState: State @relationship(type: "IN_STATE", direction: OUT)
+  inCityCity: City @relationship(type: "IN_CITY", direction: OUT)
+  id: ID! @id
+}
+
+type Designer {
+  name: String!
+  createTime: DateTime! @timestamp(operations: [CREATE])
+  email: String!
+  password: String!
+  bio: String
+  avatar: String
+  publishesProductProduct: Product @relationship(type: "PUBLISHES_PRODUCT", direction: OUT, properties: "PublishesProduct")
+  id: ID! @id
+}
+
+type Review {
+  createTime: DateTime! @timestamp(operations: [CREATE])
+  content: String!
+  instagramLink: String
+  id: ID! @id
+  userPostsReview: User @relationship(type: "POSTS_REVIEW", direction: IN)
+  productHasReview: Product @relationship(type: "HAS_REVIEW", direction: IN)
+}
+
+type Country {
+  name: String!
+  addressbookInCountry: AddressBook @relationship(type: "IN_COUNTRY", direction: IN)
+  hasStateState: State @relationship(type: "HAS_STATE", direction: OUT)
+}
+
+type State {
+  name: String!
+  addressbookInState: AddressBook @relationship(type: "IN_STATE", direction: IN)
+  countryHasState: Country @relationship(type: "HAS_STATE", direction: IN)
+  hasCityCity: City @relationship(type: "HAS_CITY", direction: OUT)
+}
+
+type City {
+  name: String!
+  addressbookInCity: AddressBook @relationship(type: "IN_CITY", direction: IN)
+  stateHasCity: State @relationship(type: "HAS_CITY", direction: IN)
+}
+
+type Refund {
+  amount: Float!
+  isHold: Boolean! @default(value: true)
+  id: ID! @id
+  userHasRefund: User @relationship(type: "HAS_REFUND", direction: IN)
+  fromOrderOrder: Order @relationship(type: "FROM_ORDER", direction: OUT)
+  refundProductProduct: Product @relationship(type: "REFUND_PRODUCT", direction: OUT)
+}
+
+type Category {
+  name: String!
+  id: ID! @id
+  inCategoryProduct: Product @relationship(type: "IN_CATEGORY", direction: OUT)
+}
+
+type Cart {
+  id: ID! @id
+  userHasCart: User @relationship(type: "HAS_CART", direction: IN)
+  cartProductProduct: Product @relationship(type: "CART_PRODUCT", direction: OUT, properties: "CartProduct")
+  placeOrderOrder: Order @relationship(type: "PLACE_ORDER", direction: OUT, properties: "PlaceOrder")
+}
+
+interface OrderProduct {
+  amount: Int!
+  isRemoved: Boolean! @default(value: false)
+}
+
+interface Liked {
+  createTime: DateTime! @timestamp(operations: [CREATE])
+  isRemoved: Boolean! @default(value: false)
+  updateTime: DateTime! @timestamp(operations: [UPDATE])
+}
+
+interface PublishesProduct {
+  createTime: DateTime! @timestamp(operations: [CREATE])
+}
+
+interface CartProduct {
+  amount: Int!
+  isRemoved: Boolean! @default(value: false)
+  createTime: DateTime! @timestamp(operations: [CREATE])
+  updateTime: DateTime! @timestamp(operations: [UPDATE])
+}
+
+interface PlaceOrder {
+  createTime: DateTime! @timestamp(operations: [CREATE])
+}

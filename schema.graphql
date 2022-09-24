@@ -13,10 +13,10 @@ type Product {
 	reviews: [Review!]! @relationship(type: "HAS_REVIEW", direction: OUT)
 	userLiked: [User!]! @relationship(type: "LIKED", direction: IN, properties: "LikedProperties")
 	userViewed: [User!]! @relationship(type: "VIEWED", direction: IN, properties: "ViewedProperties")
-	userCarted: [User!]! @relationship(type: "CART_PRODUCT", direction: IN, properties: "CartProductProperties")
-	orders: [Order!]! @relationship(type: "HAS_PRODUCT", direction: IN, properties: "HasProductProperties")
-	refunds: [Refund!]! @relationship(type: "FROM_PRODUCT", direction: IN)
-	# cartsHasProduct: [Cart!]! @relationship(type: "HAS_PRODUCT", direction: IN, properties: "HasProductProperties")
+	# userCarted: [User!]! @relationship(type: "CART_PRODUCT", direction: IN, properties: "CartProductProperties")
+	orders: [Order!]! @relationship(type: "ORDER_PRODUCT", direction: IN, properties: "OrderProductProperties")
+	refunds: [Refund!]! @relationship(type: "REFUND_PRODUCT", direction: IN)
+	carts: [Cart!]! @relationship(type: "CART_PRODUCT", direction: IN, properties: "CartProductProperties")
 }
 
 type Category {
@@ -42,18 +42,34 @@ type Designer {
 type Order {
 	id: ID! @id
 	createTime: DateTime! @timestamp(operations: [CREATE])
+  updateTime: DateTime! @timestamp(operations: [UPDATE])
 	isCancelled: Boolean! @default(value: false)
 	isPaid: Boolean! @default(value: false)
-	isShipped: Boolean! @default(value: false)
-	isFinished: Boolean! @default(value: false)
+	isDelivered: Boolean! @default(value: false)
 	user: User! @relationship(type: "HAS_ORDER", direction: IN)
-	products: [Product!]! @relationship(type: "HAS_PRODUCT", direction: OUT, properties: "HasProductProperties")
-	refunds: [Refund!]! @relationship(type: "FROM_ORDER", direction: IN)
+  cart: Cart! @relationship(type: "PLACE_ORDER", direction: IN)
+	products: [Product!]! @relationship(type: "ORDER_PRODUCT", direction: OUT, properties: "OrderProductProperties")
+	refunds: [Refund!]! @relationship(type: "REFUND_ORDER", direction: IN)
 }
 
-interface HasProductProperties @relationshipProperties {
+interface OrderProductProperties @relationshipProperties {
+  createTime: DateTime! @timestamp(operations: [CREATE])
+  updateTime: DateTime! @timestamp(operations: [UPDATE])
 	amount: Int!
-	isRemoved: Boolean! @default(value: false)
+}
+
+type Cart {
+  id: ID! @id
+  isPlaced: Boolean! @default(value: false)
+  user: User @relationship(type: "HAS_CART", direction: IN)
+  order: Order @relationship(type: "PLACE_ORDER", direction: OUT)
+  products: [Product!]! @relationship(type: "CART_PRODUCT", direction: OUT, properties: "CartProductProperties")
+}
+
+interface CartProductProperties @relationshipProperties {
+  createTime: DateTime! @timestamp(operations: [CREATE])
+  updateTime: DateTime! @timestamp(operations: [UPDATE])
+  amount: Int! @default(value: 1)
 }
 
 
@@ -85,6 +101,8 @@ interface LikedProperties @relationshipProperties {
 interface CartProductProperties @relationshipProperties {
 	createTime: DateTime! @timestamp(operations: [CREATE])
 	amount: Int!
+	isCancelled: Boolean! @default(value: false)
+	isOrdered: Boolean! @default(value: false)
 }
 
 
@@ -131,6 +149,6 @@ type Refund {
 	amount: Float!
 	isHold: Boolean! @default(value: true)
 	user: User! @relationship(type: "HAS_REFUND", direction: IN)
-	order: Order! @relationship(type: "FROM_ORDER", direction: OUT)
-	products: Product! @relationship(type: "FROM_PRODUCT", direction: OUT)
+	order: Order! @relationship(type: "REFUND_ORDER", direction: OUT)
+	products: Product! @relationship(type: "REFUND_PRODUCT", direction: OUT)
 }
